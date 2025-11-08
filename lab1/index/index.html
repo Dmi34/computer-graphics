@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Цветовой конвертер</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="app-header">
+        <div>
+          <h1 class="app-header__title">Цветовой конвертер</h1>
+        </div>
+      </header>
+
+      <section class="preview">
+        <div class="preview-swatch" id="preview-swatch"></div>
+
+        <div class="picker">
+          <label for="color-picker" class="picker-label">Выбор цвета</label>
+          <input
+            type="color"
+            id="color-picker"
+            class="color-input"
+            value="#ff0000"
+          />
+        </div>
+      </section>
+
+      <section class="panels">
+        <article class="panel">
+          <div class="panel__header">
+            <h2 class="panel__title">RGB</h2>
+            <button type="button" class="btn btn--panel-copy" data-format="rgb">
+              копировать
+            </button>
+          </div>
+          <p class="panel__subtitle">Каналы от 0 до 255</p>
+          <div class="fields">
+            <div class="field-row">
+              <label for="rgb-r" class="field-label">R</label>
+              <input
+                id="rgb-r"
+                type="number"
+                min="0"
+                max="255"
+                class="number-input"
+                value="255"
+              />
+              <input
+                id="rgb-r-range"
+                type="range"
+                min="0"
+                max="255"
+                value="255"
+                class="range-input"
+              />
+            </div>
+
+            <div class="field-row">
+              <label for="rgb-g" class="field-label">G</label>
+              <input
+                id="rgb-g"
+                type="number"
+                min="0"
+                max="255"
+                class="number-input"
+                value="0"
+              />
+              <input
+                id="rgb-g-range"
+                type="range"
+                min="0"
+                max="255"
+                value="0"
+                class="range-input"
+              />
+            </div>
+
+            <div class="field-row">
+              <label for="rgb-b" class="field-label">B</label>
+              <input
+                id="rgb-b"
+                type="number"
+                min="0"
+                max="255"
+                class="number-input"
+                value="0"
+              />
+              <input
+                id="rgb-b-range"
+                type="range"
+                min="0"
+                max="255"
+                value="0"
+                class="range-input"
+              />
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__header">
+            <h2 class="panel__title">CMYK</h2>
+            <button
+              type="button"
+              class="btn btn--panel-copy"
+              data-format="cmyk"
+            >
+              копировать
+            </button>
+          </div>
+          <p class="panel__subtitle">Проценты от 0 до 100</p>
+          <div class="fields">
+            <div class="field-row">
+              <label for="cmyk-c" class="field-label">C</label>
+              <input
+                id="cmyk-c"
+                type="number"
+                min="0"
+                max="100"
+                class="number-input"
+                value="0"
+              />
+              <input
+                id="cmyk-c-range"
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+                class="range-input"
+              />
+            </div>
+
+            <div class="field-row">
+              <label for="cmyk-m" class="field-label">M</label>
+              <input
+                id="cmyk-m"
+                type="number"
+                min="0"
+                max="100"
+                class="number-input"
+                value="100"
+              />
+              <input
+                id="cmyk-m-range"
+                type="range"
+                min="0"
+                max="100"
+                value="100"
+                class="range-input"
+              />
+            </div>
+
+            <div class="field-row">
+              <label for="cmyk-y" class="field-label">Y</label>
+              <input
+                id="cmyk-y"
+                type="number"
+                min="0"
+                max="100"
+                class="number-input"
+                value="100"
+              />
+              <input
+                id="cmyk-y-range"
+                type="range"
+                min="0"
+                max="100"
+                value="100"
+                class="range-input"
+              />
+            </div>
+
+            <div class="field-row">
+              <label for="cmyk-k" class="field-label">K</label>
+              <input
+                id="cmyk-k"
+                type="number"
+                min="0"
+                max="100"
+                class="number-input"
+                value="0"
+              />
+              <input
+                id="cmyk-k-range"
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+                class="range-input"
+              />
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__header">
+            <h2 class="panel__title">HSV</h2>
+            <button type="button" class="btn btn--panel-copy" data-format="hsv">
+              копировать
+            </button>
+          </div>
+          <p class="panel__subtitle">H: 0–360°, S/V: 0–100%</p>
+          <div class="fields">
+            <div class="field-row">
+              <label for="hsv-h" class="field-label">H</label>
+              <input
+                id="hsv-h"
+                type="number"
+                min="0"
+                max="360"
+                class="number-input"
+                value="0"
+              />
+              <input
+                id="hsv-h-range"
+                type="range"
+                min="0"
+                max="360"
+                value="0"
+                class="range-input"
+              />
+            </div>
+
+            <div class="field-row">
+              <label for="hsv-s" class="field-label">S</label>
+              <input
+                id="hsv-s"
+                type="number"
+                min="0"
+                max="100"
+                class="number-input"
+                value="100"
+              />
+              <input
+                id="hsv-s-range"
+                type="range"
+                min="0"
+                max="100"
+                value="100"
+                class="range-input"
+              />
+            </div>
+
+            <div class="field-row">
+              <label for="hsv-v" class="field-label">V</label>
+              <input
+                id="hsv-v"
+                type="number"
+                min="0"
+                max="100"
+                class="number-input"
+                value="100"
+              />
+              <input
+                id="hsv-v-range"
+                type="range"
+                min="0"
+                max="100"
+                value="100"
+                class="range-input"
+              />
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
