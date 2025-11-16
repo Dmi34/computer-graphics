@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Обработка изображений: сглаживание и гистограмма</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="page-header">
+        <h1>Обработка изображений</h1>
+        <p>
+          Низкочастотные фильтры, линейное контрастирование, эквализация
+          гистограммы (RGB и HSV).
+        </p>
+      </header>
+
+      <main class="layout">
+        <section class="panel">
+          <div class="panel-main">
+            <div class="panel-group panel-group--image">
+              <div class="panel-title">Изображение</div>
+              <div class="panel-group-content panel-group-content--image">
+                <div class="select-wrapper">
+                  <div id="presetShortLabel" class="select-display"></div>
+                  <select id="presetSelect" class="select-native">
+                  </select>
+                </div>
+
+                <button id="loadPresetBtn" class="btn btn-primary btn-block">
+                  Загрузить
+                </button>
+
+                <label for="fileInput" class="btn btn-file btn-block">
+                  Выбрать файл
+                </label>
+                <input
+                  id="fileInput"
+                  type="file"
+                  accept="image/*"
+                  class="file-input-hidden"
+                />
+              </div>
+            </div>
+
+            <div class="panel-group">
+              <div class="panel-title">Фильтрация и контраст</div>
+              <div class="panel-group-content panel-group-content--filters">
+                <div class="filters-left">
+                  <div class="subgroup subgroup--smoothing">
+                    <div class="subgroup-label">Сглаживание</div>
+                    <div class="panel-row">
+                      <select
+                        id="smoothingSelect"
+                        class="control control--grow"
+                      >
+                        <option value="mean3">Усреднение 3×3</option>
+                        <option value="mean5">Усреднение 5×5</option>
+                        <option value="gauss3">Гауссовский 3×3</option>
+                      </select>
+                      <button id="applySmoothingBtn" class="btn btn-primary">
+                        Применить
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="subgroup subgroup--contrast">
+                    <div class="subgroup-label">Контраст</div>
+                    <div class="panel-row panel-row--wrap contrast-buttons">
+                      <button
+                        id="linearContrastBtn"
+                        class="btn btn-contrast-main"
+                      >
+                        Лин. контраст (V в HSV)
+                      </button>
+                      <button
+                        id="histEqRgbBtn"
+                        class="btn btn-contrast-secondary"
+                      >
+                        Эквализация (RGB)
+                      </button>
+                      <button
+                        id="histEqHsvBtn"
+                        class="btn btn-contrast-secondary"
+                      >
+                        Эквализация (V в HSV)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="filters-hist">
+                  <div class="subgroup-label subgroup-label--center">
+                    Гистограмма
+                  </div>
+                  <div class="histogram-wrapper">
+                    <canvas
+                      id="histogramCanvas"
+                      width="180"
+                      height="180"
+                    ></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-group panel-group--compact">
+              <div class="panel-title">История</div>
+              <div class="panel-group-content panel-group-content--history">
+                <button id="undoBtn" class="btn btn-outline btn-block">
+                  Отменить последний шаг
+                </button>
+                <button id="resetBtn" class="btn btn-primary btn-block">
+                  Сброс к исходному
+                </button>
+              </div>
+
+              <div class="panel-title panel-title--mt">Экспорт</div>
+              <div class="panel-group-content panel-group-content--export">
+                <button id="downloadBtn" class="btn btn-accent btn-block">
+                  Скачать
+                </button>
+                <button id="copyBtn" class="btn btn-accent btn-block">
+                  Скопировать в буфер
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view">
+          <div class="canvas-block">
+            <h2>Исходное изображение</h2>
+            <div class="canvas-inner">
+              <canvas id="originalCanvas"></canvas>
+            </div>
+          </div>
+          <div class="canvas-block">
+            <h2>Результат обработки</h2>
+            <div class="canvas-inner">
+              <canvas id="processedCanvas"></canvas>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
