@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Отсечение отрезков: Лианг–Барски и выпуклый многоугольник</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="controls">
+        <h1>Отсечение отрезков</h1>
+        <p class="subtitle">
+          Алгоритм Лианга–Барски и отсечение отрезков выпуклым многоугольником.
+        </p>
+
+        <section>
+          <h2>Отрезки (параметрическое задание)</h2>
+          <p class="hint">
+            Формат: первая строка — <code>n</code> (необязательно). Далее по
+            одному отрезку в строке.<br />
+            В каждой строке должно встречаться минимум четыре числа:
+            <code>x0</code>, <code>a</code>, <code>y0</code>,
+            <code>b</code>.<br />
+            Допустимы варианты, например:<br />
+            <code>0 5 0 3</code><br />
+            <code>0 + 5 * t 0 + 3 * t</code><br />
+            <code>-1 + 2*t 3 - 4*t</code><br />
+          </p>
+          <textarea id="segmentsInput" rows="8">
+5
+-15 + 30 * t   -10 + 0 * t
+-25 + 0 * t    -25 + 30 * t
+-20 + 40 * t   10 - 20 * t
+-5 + 10 * t    -8 + 16 * t
+18 - 36 * t    6 + 0 * t
+            </textarea
+          >
+        </section>
+
+        <section class="two-cols">
+          <div class="col">
+            <h2>Прямоугольное окно (Лианг–Барски)</h2>
+            <p class="hint">Формат: <code>Xmin Ymin Xmax Ymax</code></p>
+            <input id="rectInput" type="text" value="-12 -12 12 12" />
+            <button id="btnLiang" class="primary">Отсечь (Лианг–Барски)</button>
+          </div>
+          <div class="col">
+            <h2>Выпуклый многоугольник</h2>
+            <p class="hint">
+              Первая строка — <code>m</code> (необязательно). Далее по одной
+              стороне:<br />
+              <code>X1 Y1 X2 Y2</code>, стороны идут по контуру.
+            </p>
+            <textarea id="polygonInput" rows="6">
+5
+-12 -6 0 -15
+0 -15 10 -4
+10 -4 3 8
+3 8 -10 20
+-10 20 -12 -6
+                </textarea
+            >
+            <button id="btnPolygon" class="primary">
+              Отсечь многоугольником
+            </button>
+          </div>
+        </section>
+
+        <section>
+          <button id="btnReset" class="secondary">Сброс</button>
+        </section>
+
+        <section class="legend">
+          <h2>Обозначения</h2>
+          <ul>
+            <li>
+              <span class="legend-swatch swatch-window"></span> Окно / выпуклый
+              многоугольник
+            </li>
+            <li>
+              <span class="legend-swatch swatch-original"></span> Исходные
+              отрезки
+            </li>
+            <li>
+              <span class="legend-swatch swatch-clipped"></span> Видимые части
+              отрезков
+            </li>
+          </ul>
+        </section>
+
+        <div id="status" class="status"></div>
+      </div>
+
+      <div class="canvas-panel">
+        <canvas id="viewport" width="900" height="600"></canvas>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
