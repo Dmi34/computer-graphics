@@ -10,8 +10,11 @@
 
   --step-color: #2563eb;
   --dda-color: #16a34a;
+  --castle-color: #f59e0b;
+  --wu-color: #0d9488;
   --bres-color: #ea580c;
   --circle-color: #7c3aed;
+  --circle-wu-color: #ec4899;
 }
 
 *,
@@ -211,12 +214,24 @@ select:focus {
   background: var(--dda-color);
 }
 
+.legend-castle {
+  background: var(--castle-color);
+}
+
+.legend-wu {
+  background: var(--wu-color);
+}
+
 .legend-bres {
   background: var(--bres-color);
 }
 
 .legend-circle {
   background: var(--circle-color);
+}
+
+.legend-circle-wu {
+  background: var(--circle-wu-color);
 }
 
 .canvas-panel {

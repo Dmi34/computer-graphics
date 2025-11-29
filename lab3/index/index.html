@@ -10,7 +10,10 @@
       <header class="app-header">
         <div>
           <h1>Растеризация отрезков и окружностей</h1>
-          <p>Пошаговый алгоритм, ЦДА, Брезенхем (отрезок и окружность)</p>
+          <p>
+            Пошаговый алгоритм, ЦДА, Кастла-Питвея, метод Ву, Брезенхем (отрезок и
+            окружность)
+          </p>
         </div>
       </header>
 
@@ -43,6 +46,8 @@
                 <option value="step">Пошаговый (по уравнению прямой)</option>
                 <option value="dda">ЦДА (Digital Differential Analyzer)</option>
                 <option value="bresenham">Брезенхем (отрезок)</option>
+                <option value="castle">Кастла-Питвея</option>
+                <option value="wu">Метод Ву (антиалиасинг)</option>
               </select>
             </label>
 
@@ -77,7 +82,14 @@
               </label>
             </div>
 
-            <p class="hint">Для окружности используется алгоритм Брезенхема.</p>
+            <label class="full-width">
+              Алгоритм для окружности
+              <select id="circleAlgorithm">
+                <option value="bresenham">Брезенхем (окружность)</option>
+                <option value="wu">Метод Ву (антиалиасинг)</option>
+              </select>
+            </label>
+
 
             <div class="buttons-row">
               <button type="button" id="drawCircleBtn" class="btn-primary">
@@ -109,11 +121,19 @@
               </li>
               <li><span class="legend-color legend-dda"></span> ЦДА</li>
               <li>
+                <span class="legend-color legend-castle"></span> Кастла-Питвея
+              </li>
+              <li><span class="legend-color legend-wu"></span> Метод Ву</li>
+              <li>
                 <span class="legend-color legend-bres"></span> Брезенхем
                 (отрезок)
               </li>
               <li>
                 <span class="legend-color legend-circle"></span> Брезенхем
+                (окружность)
+              </li>
+              <li>
+                <span class="legend-color legend-circle-wu"></span> Метод Ву
                 (окружность)
               </li>
             </ul>

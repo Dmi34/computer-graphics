@@ -308,6 +308,181 @@ document.addEventListener("DOMContentLoaded", () => {
     return points;
   }
 
+  function buildCastlePitwaySequence(dx, dy) {
+    if (dx === 0 && dy === 0) {
+      return [];
+    }
+
+    if (dy === 0) {
+      return Array(dx).fill("s");
+    }
+
+    if (dx === dy) {
+      return Array(dx).fill("d");
+    }
+
+    let x = dx - dy;
+    let y = dy;
+    let m1 = ["s"];
+    let m2 = ["d"];
+
+    while (x !== y) {
+      if (x > y) {
+        x -= y;
+        m2 = m1.concat([...m2].reverse());
+      } else {
+        y -= x;
+        m1 = m2.concat([...m1].reverse());
+      }
+    }
+
+    return m1.concat([...m2].reverse());
+  }
+
+  function castlePitwayLinePoints(x0, y0, x1, y1) {
+    if (x0 === x1 && y0 === y1) {
+      return [{ x: x0, y: y0 }];
+    }
+
+    let dx = x1 - x0;
+    let dy = y1 - y0;
+
+    let swapXY = false;
+    if (Math.abs(dy) > Math.abs(dx)) {
+      swapXY = true;
+      [dx, dy] = [dy, dx];
+    }
+
+    let reflectX = false;
+    if (dx < 0) {
+      reflectX = true;
+      dx = -dx;
+      dy = -dy;
+    }
+
+    let reflectY = false;
+    if (dy < 0) {
+      reflectY = true;
+      dy = -dy;
+    }
+
+    const gcd = (a, b) => {
+      let aa = a;
+      let bb = b;
+      while (bb !== 0) {
+        [aa, bb] = [bb, aa % bb];
+      }
+      return aa;
+    };
+
+    const segments = gcd(dx, dy) || 1;
+    const baseSequence = buildCastlePitwaySequence(
+      dx / segments,
+      dy / segments
+    );
+
+    const sequence = [];
+    for (let i = 0; i < segments; i++) {
+      sequence.push(...baseSequence);
+    }
+
+    const canonicalPoints = [{ x: 0, y: 0 }];
+    let cx = 0;
+    let cy = 0;
+    for (const step of sequence) {
+      if (step === "d") {
+        cx += 1;
+        cy += 1;
+      } else {
+        cx += 1;
+      }
+      canonicalPoints.push({ x: cx, y: cy });
+    }
+
+    return canonicalPoints.map((p) => {
+      let px = p.x;
+      let py = p.y;
+
+      if (reflectY) {
+        py = -py;
+      }
+      if (reflectX) {
+        px = -px;
+        py = -py;
+      }
+      if (swapXY) {
+        [px, py] = [py, px];
+      }
+
+      return { x: x0 + px, y: y0 + py };
+    });
+  }
+
+  function wuLinePoints(x0, y0, x1, y1) {
+    const pointMap = new Map();
+
+    const plot = (x, y, intensity, steep) => {
+      const clamped = Math.min(1, Math.max(0, intensity));
+      if (clamped <= 0) {
+        return;
+      }
+
+      const px = steep ? y : x;
+      const py = steep ? x : y;
+      const key = `${px},${py}`;
+      const existing = pointMap.get(key);
+      if (!existing || existing.intensity < clamped) {
+        pointMap.set(key, { x: px, y: py, intensity: clamped });
+      }
+    };
+
+    const ipart = (value) => Math.floor(value);
+    const fpart = (value) => value - Math.floor(value);
+    const rfpart = (value) => 1 - fpart(value);
+
+    let steep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
+    if (steep) {
+      [x0, y0] = [y0, x0];
+      [x1, y1] = [y1, x1];
+    }
+
+    if (x0 > x1) {
+      [x0, x1] = [x1, x0];
+      [y0, y1] = [y1, y0];
+    }
+
+    const dx = x1 - x0;
+    const dy = y1 - y0;
+    const gradient = dx === 0 ? 0 : dy / dx;
+
+    const firstXEnd = Math.round(x0);
+    const firstYEnd = y0 + gradient * (firstXEnd - x0);
+    const firstGap = rfpart(x0 + 0.5);
+    const firstXPixel = firstXEnd;
+    const firstYPixel = ipart(firstYEnd);
+    plot(firstXPixel, firstYPixel, rfpart(firstYEnd) * firstGap, steep);
+    plot(firstXPixel, firstYPixel + 1, fpart(firstYEnd) * firstGap, steep);
+
+    let intery = firstYEnd + gradient;
+
+    const lastXEnd = Math.round(x1);
+    const lastYEnd = y1 + gradient * (lastXEnd - x1);
+    const lastGap = fpart(x1 + 0.5);
+    const lastXPixel = lastXEnd;
+    const lastYPixel = ipart(lastYEnd);
+    plot(lastXPixel, lastYPixel, rfpart(lastYEnd) * lastGap, steep);
+    plot(lastXPixel, lastYPixel + 1, fpart(lastYEnd) * lastGap, steep);
+
+    for (let x = firstXPixel + 1; x < lastXPixel; x++) {
+      const y = intery;
+      plot(x, ipart(y), rfpart(y), steep);
+      plot(x, ipart(y) + 1, fpart(y), steep);
+      intery += gradient;
+    }
+
+    return Array.from(pointMap.values());
+  }
+
   function bresenhamCirclePoints(xc, yc, r) {
     const points = [];
 
@@ -342,13 +517,99 @@ document.addEventListener("DOMContentLoaded", () => {
     return uniquePoints(points);
   }
 
+  function wuCirclePoints(xc, yc, r) {
+    const pointMap = new Map();
+
+    const addPoint = (x, y, intensity) => {
+      const clamped = Math.min(1, Math.max(0, intensity));
+      if (clamped <= 0) {
+        return;
+      }
+
+      const key = `${x},${y}`;
+      const existing = pointMap.get(key);
+      if (!existing || existing.intensity < clamped) {
+        pointMap.set(key, { x, y, intensity: clamped });
+      }
+    };
+
+    const addSymmetric = (dx, dy, intensity) => {
+      addPoint(xc + dx, yc + dy, intensity);
+      addPoint(xc - dx, yc + dy, intensity);
+      addPoint(xc + dx, yc - dy, intensity);
+      addPoint(xc - dx, yc - dy, intensity);
+
+      addPoint(xc + dy, yc + dx, intensity);
+      addPoint(xc - dy, yc + dx, intensity);
+      addPoint(xc + dy, yc - dx, intensity);
+      addPoint(xc - dy, yc - dx, intensity);
+    };
+
+    const limit = Math.ceil(r / Math.SQRT2);
+    for (let x = 0; x <= limit; x++) {
+      const yFloat = Math.sqrt(r * r - x * x);
+      const yFloor = Math.floor(yFloat);
+      const frac = yFloat - yFloor;
+      const upperIntensity = 1 - frac;
+      const lowerIntensity = frac;
+
+      if (upperIntensity > 0) {
+        addSymmetric(x, yFloor, upperIntensity);
+      }
+      if (lowerIntensity > 0) {
+        addSymmetric(x, yFloor + 1, lowerIntensity);
+      }
+    }
+
+    return Array.from(pointMap.values());
+  }
+
+  function hexToRgb(hex) {
+    if (!hex || !hex.startsWith("#")) {
+      return null;
+    }
+
+    let normalized = hex;
+    if (hex.length === 4) {
+      normalized = `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`;
+    }
+
+    if (normalized.length !== 7) {
+      return null;
+    }
+
+    const value = parseInt(normalized.slice(1), 16);
+    if (Number.isNaN(value)) {
+      return null;
+    }
+
+    return {
+      r: (value >> 16) & 255,
+      g: (value >> 8) & 255,
+      b: value & 255,
+    };
+  }
+
 
   function drawPixels(points, grid, color) {
     ctx.save();
-    ctx.fillStyle = color;
+    const rgb = hexToRgb(color);
 
     for (const p of points) {
       const { px, py } = worldToCanvas(p.x, p.y + 1, grid);
+      const intensity =
+        typeof p.intensity === "number" ? Math.min(Math.max(p.intensity, 0), 1) : 1;
+
+      if (intensity <= 0) {
+        continue;
+      }
+
+      if (intensity >= 1 || !rgb) {
+        ctx.fillStyle = color;
+      } else {
+        ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${intensity})`;
+      }
+
       ctx.fillRect(px + 1, py + 1, grid.cellSize - 2, grid.cellSize - 2);
     }
 
@@ -378,6 +639,10 @@ document.addEventListener("DOMContentLoaded", () => {
         points = stepLinePoints(x0, y0, x1, y1);
       } else if (algorithm === "dda") {
         points = ddaLinePoints(x0, y0, x1, y1);
+      } else if (algorithm === "castle") {
+        points = castlePitwayLinePoints(x0, y0, x1, y1);
+      } else if (algorithm === "wu") {
+        points = wuLinePoints(x0, y0, x1, y1);
       } else {
         points = bresenhamLinePoints(x0, y0, x1, y1);
       }
@@ -391,6 +656,10 @@ document.addEventListener("DOMContentLoaded", () => {
           ? "#2563eb"
           : algorithm === "dda"
           ? "#16a34a"
+          : algorithm === "castle"
+          ? "#f59e0b"
+          : algorithm === "wu"
+          ? "#0d9488"
           : "#ea580c";
 
       drawPixels(points, grid, color);
@@ -404,6 +673,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const xc = getIntFromInput("xc", "x центра");
       const yc = getIntFromInput("yc", "y центра");
       const r = getIntFromInput("radius", "радиуса");
+      const algorithm = document.getElementById("circleAlgorithm").value;
 
       if (r <= 0) {
         throw new Error("Радиус должен быть положительным целым числом.");
@@ -416,12 +686,17 @@ document.addEventListener("DOMContentLoaded", () => {
       drawGridAndAxes(grid);
 
       const t0 = performance.now ? performance.now() : Date.now();
-      const points = bresenhamCirclePoints(xc, yc, r);
+      let points;
+      if (algorithm === "wu") {
+        points = wuCirclePoints(xc, yc, r);
+      } else {
+        points = bresenhamCirclePoints(xc, yc, r);
+      }
       const t1 = performance.now ? performance.now() : Date.now();
       const dt = t1 - t0;
       circleTimeSpan.textContent = dt.toFixed(3) + " мс";
 
-      const color = "#7c3aed";
+      const color = algorithm === "wu" ? "#ec4899" : "#7c3aed";
       drawPixels(points, grid, color);
     } catch (e) {
       showError(e.message);
